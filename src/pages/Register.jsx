@@ -1,5 +1,5 @@
 import InputText from '@/components/InputText/InputText';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
@@ -10,90 +10,127 @@ const Register = () => {
     const [error, setError] = useState({});
 
     const navigate = useNavigate();
-    const getName = (name) => {
-        const newArr = name.trim().split(" ").map((item) => item);
-        const firstName = newArr.pop();
-        const lastName = newArr.join(" ")
 
-        return [firstName, lastName]
-    }
+    const getName = (name) => {
+        const parts = name.trim().split(" ");
+        if (parts.length === 1) return [parts[0], ""];
+        const firstName = parts.pop();
+        const lastName = parts.join(" ");
+        return [firstName, lastName];
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError({});
 
+        if (!fullName.trim()) {
+            setError((prevs) => ({ ...prevs, fullName: "Họ và tên không được để trống" }));
+            return;
+        }
+        if (!email.trim()) {
+            setError((prevs) => ({ ...prevs, email: "Email không được để trống" }));
+            return;
+        }
+        if (!password.trim()) {
+            setError((prevs) => ({ ...prevs, password: "Mật khẩu không được để trống" }));
+            return;
+        }
         if (password !== passwordConfirm) {
-            setError({ passwordConfirm: "Mật khẩu không khớp" });
+            setError((prevs) => ({ ...prevs, passwordConfirm: "Mật khẩu không khớp" }));
             return;
         }
 
         const [firstName, lastName] = getName(fullName);
+        const requestData = {
+            firstName,
+            lastName,
+            email,
+            password,
+            password_confirmation: passwordConfirm,
+        };
 
         try {
             const res = await fetch("https://api01.f8team.dev/api/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    firstName,
-                    lastName,
-                    email,
-                    password,
-                    password_confirmation: passwordConfirm
-                })
-            })
+                body: JSON.stringify(requestData),
+            });
 
             const data = await res.json();
 
             if (!res.ok) {
-                setError(data.errors || {})
-                throw data;
+                if (data.errors) {
+                    setError(data.errors);
+                } else if (data.message) {
+                    setError((prevs) => ({ ...prevs, general: data.message }));
+                } else {
+                    setError((prevs) => ({ ...prevs, general: "Đã xảy ra lỗi, vui lòng thử lại." }));
+                }
+                throw new Error(data.message || "Đăng ký thất bại");
             }
 
-            localStorage.setItem("token", `${data.access_token}`);
+            localStorage.setItem("token", data.access_token);
             navigate("/");
         } catch (error) {
-            if (error.message && error.message.includes(email)) {
-                setError({ email: "Email này đã được sử dụng.Vui lòng sử dụng email khác." });
-            }
+            console.error("Lỗi đăng ký:", error);
+            setError((prevs) => ({ ...prevs, general: "Lỗi máy chủ, vui lòng thử lại sau." }));
         }
-    }
+    };
+
+
+
     return (
         <form onSubmit={handleSubmit}>
             <InputText
-                label="Fullname"
+                label="Họ và tên"
                 type="text"
                 placeholder="Vui lòng nhập họ tên"
                 value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                onChange={(e) => {
+                    setError({})
+                    setFullName(e.target.value)
+                }}
                 error={error.fullName}
             />
             <InputText
                 label="Email"
-                type="text"
-                placeholder="Vui lòng nhập Email"
+                type="email"
+                placeholder="Vui lòng nhập email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                    setError({});
+                    setEmail(e.target.value)
+                }}
                 error={error.email}
             />
             <InputText
-                label="Password"
+                label="Mật khẩu"
                 type="password"
-                placeholder="Vui lòng nhập họ tên"
+                placeholder="Vui lòng nhập mật khẩu"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                    setError({})
+                    setPassword(e.target.value)
+                }}
                 error={error.password}
             />
             <InputText
-                label="Confirm password"
+                label="Xác nhận mật khẩu"
                 type="password"
-                placeholder="Vui lòng nhập họ tên"
+                placeholder="Vui lòng xác nhận mật khẩu"
                 value={passwordConfirm}
-                onChange={(e) => setPasswordConfirm(e.target.value)}
+                onChange={(e) => {
+                    setError({})
+                    setPasswordConfirm(e.target.value)
+                }}
                 error={error.passwordConfirm}
             />
-            <button>Register</button>
+            {error.general && <p style={{ color: "red" }}>{error.general}</p>}
+            <button>
+                Đăng ký
+            </button>
         </form>
-    )
-}
+    );
+};
 
-export default Register
+export default Register;

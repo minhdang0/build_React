@@ -21,7 +21,7 @@ const ProtectedRoute = ({ children }) => {
                 if (!res.ok) {
                     throw res;
                 }
-                return res.json()
+                return res.json();
             })
             .then((data) => {
                 setCurrentUser(data.user);
@@ -42,7 +42,7 @@ const ProtectedRoute = ({ children }) => {
 
     if (!currentUser) {
         const path = encodeURIComponent(location.pathname);
-        return <Navigate to={`${config.routes.login} ${path ? `continue=${path}` : ""}`} />;
+        return <Navigate to={`${config.routes.login}${path ? `?continue=${path}` : ""}`} />;
     }
 
     return children;

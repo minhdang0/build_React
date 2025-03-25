@@ -1,19 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import * as productService from '@/services/productService';
+import * as httpRequest from "@/utils/httpRequest";
 
 function Product() {
   const [products, setProduct] = useState([]);
+
   useEffect(() => {
-    fetch("https://api01.f8team.dev/api/products")
-      .then((res) => res.json())
-      .then((response) => {
-        setProduct(response.data);
-      });
+    httpRequest
+      .get("/products")
+      .then((products) => {
+
+        setProduct(products.data)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }, []);
   return (
     <>
       <div>
-        {/* <ul>
+        <ul>
           {products.map((product) => {
             return (
               <li key={product.id}>
@@ -21,8 +28,8 @@ function Product() {
               </li>
             );
           })}
-        </ul> */}
-        Product
+        </ul>
+
       </div>
     </>
   );
