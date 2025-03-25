@@ -12,7 +12,7 @@ const Register = () => {
     const navigate = useNavigate();
 
     const getName = (name) => {
-        const parts = name.trim().split(" ");
+        const parts = name.trim().split(" ").map((item) => item);
         if (parts.length === 1) return [parts[0], ""];
         const firstName = parts.pop();
         const lastName = parts.join(" ");
