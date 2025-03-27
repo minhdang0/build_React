@@ -6,7 +6,7 @@ export const getAll = async () => {
 }
 
 export const getOne = async (id) => {
-    const response = await httpRequest.get(`/product/${id}`) ; 
+    const response = await httpRequest.get(`/products/${id}`) ; 
     return response;
 }
 

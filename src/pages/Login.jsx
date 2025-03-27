@@ -1,5 +1,7 @@
 import config from "@/configs";
 import useQuery from "@/hooks/useQuery";
+import authService from "@/services/authService";
+import httpRequest from "@/utils/httpRequest";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,29 +13,35 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [hasError, setHasError] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = {
             email,
             password
         }
-
-        fetch('https://api01.f8team.dev/api/auth/login', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify(formData)
-        })
-            .then((res) => {
-                if (!res.ok) throw res;
-                return res.json();
-            })
-            .then((data) => {
-                localStorage.setItem('token', data.access_token)
-                navigate(query.get("continue") || config.routes.home);
-            })
-            .catch(() => {
-                setHasError(true);
-            })
+        try {
+            const res = await authService.login(formData);
+            httpRequest.setToken(res.data.access_token);
+            navigate(query.get("continue") || config.routes.home);
+        } catch (error) {
+            setHasError(true);
+        }
+        // fetch('https://api01.f8team.dev/api/auth/login', {
+        //     method: 'POST',
+        //     headers: { 'content-type': 'application/json' },
+        //     body: JSON.stringify(formData)
+        // })
+        //     .then((res) => {
+        //         if (!res.ok) throw res;
+        //         return res.json();
+        //     })
+        //     .then((data) => {
+        //         httpRequest.setToken(data.access_token);
+        //         navigate(query.get("continue") || config.routes.home);
+        //     })
+        //     .catch(() => {
+        //         setHasError(true);
+        //     })
     }
 
     return (

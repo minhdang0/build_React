@@ -1,0 +1,28 @@
+import * as httpRequest from "@/utils/httpRequest";
+
+export const currentUser = async () => {
+    const response = await httpRequest.get('/auth/me',) ; 
+    return response;
+}
+
+export const login = async(data) => {
+    const response = await httpRequest.post('/auth/login', {
+        Headers: {'Content-Type' : "application/json"},
+        body: JSON.stringify(data)
+    })
+    return response;
+}
+
+export const register = async (data) => {
+    const response = await httpRequest.post('/auth/register', {
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    return response;
+};
+
+export default {
+    currentUser,
+    login,
+    register
+}

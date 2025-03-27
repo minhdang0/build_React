@@ -1,4 +1,5 @@
 import InputText from '@/components/InputText/InputText';
+import authService from '@/services/authService';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,19 +25,19 @@ const Register = () => {
         setError({});
 
         if (!fullName.trim()) {
-            setError((prevs) => ({ ...prevs, fullName: "Họ và tên không được để trống" }));
+            setError((prev) => ({ ...prev, fullName: "Họ và tên không được để trống" }));
             return;
         }
         if (!email.trim()) {
-            setError((prevs) => ({ ...prevs, email: "Email không được để trống" }));
+            setError((prev) => ({ ...prev, email: "Email không được để trống" }));
             return;
         }
         if (!password.trim()) {
-            setError((prevs) => ({ ...prevs, password: "Mật khẩu không được để trống" }));
+            setError((prev) => ({ ...prev, password: "Mật khẩu không được để trống" }));
             return;
         }
         if (password !== passwordConfirm) {
-            setError((prevs) => ({ ...prevs, passwordConfirm: "Mật khẩu không khớp" }));
+            setError((prev) => ({ ...prev, passwordConfirm: "Mật khẩu không khớp" }));
             return;
         }
 
@@ -50,11 +51,7 @@ const Register = () => {
         };
 
         try {
-            const res = await fetch("https://api01.f8team.dev/api/auth/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(requestData),
-            });
+            const res = await authService.register(requestData);
 
             const data = await res.json();
 
@@ -62,9 +59,9 @@ const Register = () => {
                 if (data.errors) {
                     setError(data.errors);
                 } else if (data.message) {
-                    setError((prevs) => ({ ...prevs, general: data.message }));
+                    setError((prev) => ({ ...prev, general: data.message }));
                 } else {
-                    setError((prevs) => ({ ...prevs, general: "Đã xảy ra lỗi, vui lòng thử lại." }));
+                    setError((prev) => ({ ...prev, general: "Đã xảy ra lỗi, vui lòng thử lại." }));
                 }
                 throw new Error(data.message || "Đăng ký thất bại");
             }
@@ -72,8 +69,8 @@ const Register = () => {
             localStorage.setItem("token", data.access_token);
             navigate("/");
         } catch (error) {
-            console.error("Lỗi đăng ký:", error);
-            setError((prevs) => ({ ...prevs, general: "Lỗi máy chủ, vui lòng thử lại sau." }));
+            console.log("Lỗi đăng ký:", error);
+            setError((prev) => ({ ...prev, general: "Lỗi máy chủ, vui lòng thử lại sau." }));
         }
     };
 

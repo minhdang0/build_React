@@ -1,9 +1,7 @@
 import * as httpRequest from "@/utils/httpRequest";
 
 export const getAll = async () => {
-    const response = await httpRequest.get('/users',{
-        headers: `Bearer ${localStorage.getItem('token')}`
-    }) ; 
+    const response = await httpRequest.get('/users') ; 
     return response;
 }
 

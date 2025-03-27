@@ -32,15 +32,23 @@ export const  put = (url,data, config) => {
     return send("put", url, data, config);
 }
 
+export const  patch = (url,data, config) => {
+    return send("patch", url, data, config);
+}
+
 export const  del = (url, config) => {
     return send("delete", url, null, config);
 }
 
-
+export const setToken = (token) => {
+    axios.defaults.headers['Authorization'] = `Bearer ${token}`;
+    localStorage.setItem("token", token);
+}
 
 export default {
     get,
     post,
     put,
-    del
+    del,
+    setToken
 }
