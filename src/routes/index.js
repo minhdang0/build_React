@@ -11,6 +11,7 @@ import NoHeaderLayout from '@/layouts/NoHeaderLayout/NoHeaderLayout';
 import Login from '@/pages/Login';
 import User from '@/pages/User';
 import Register from '@/pages/Register';
+import RegisterOther from '@/pages/Register-2';
 
 const routes = [
     {
@@ -25,6 +26,11 @@ const routes = [
         path:config.routes.register,
         component: Register
     },
+    {
+        path:config.routes.registerOther,
+        component: RegisterOther
+    },
+    
     {
         path:config.routes.user,
         component:User,

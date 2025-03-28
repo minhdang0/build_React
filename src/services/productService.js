@@ -10,7 +10,6 @@ export const getOne = async (id) => {
     return response;
 }
 
-
 export default {
     getAll,
     getOne

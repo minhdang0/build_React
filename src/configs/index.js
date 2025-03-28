@@ -10,7 +10,8 @@ const config = {
         productDetail:'/products/:id',
         contact:'/contact',
         introduce:'/introduce',
-        notFound:'*'
+        notFound:'*',
+        registerOther: '/register_other'
     }
 }
 

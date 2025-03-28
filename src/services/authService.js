@@ -6,18 +6,12 @@ export const currentUser = async () => {
 }
 
 export const login = async(data) => {
-    const response = await httpRequest.post('/auth/login', {
-        Headers: {'Content-Type' : "application/json"},
-        body: JSON.stringify(data)
-    })
+    const response = await httpRequest.post('/auth/login', data)
     return response;
 }
 
 export const register = async (data) => {
-    const response = await httpRequest.post('/auth/register', {
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    });
+    const response = await httpRequest.post('/auth/register',data);
     return response;
 };
 
