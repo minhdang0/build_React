@@ -10,7 +10,6 @@ function Product() {
     httpRequest
       .get("/products")
       .then((products) => {
-
         setProduct(products.data)
       })
       .catch((error) => {

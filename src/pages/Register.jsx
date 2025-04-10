@@ -51,19 +51,14 @@ const Register = () => {
         };
 
         try {
-            const res = await authService.register(requestData);
+            const data = await authService.register(requestData);
 
-            const data = await res.json();
-
-            if (!res.ok) {
-                if (data.errors) {
-                    setError(data.errors);
-                } else if (data.message) {
-                    setError((prev) => ({ ...prev, general: data.message }));
-                } else {
-                    setError((prev) => ({ ...prev, general: "Đã xảy ra lỗi, vui lòng thử lại." }));
-                }
-                throw new Error(data.message || "Đăng ký thất bại");
+            if (data.errors) {
+                setError(data.errors);
+            } else if (data.message) {
+                setError((prev) => ({ ...prev, general: data.message }));
+            } else {
+                setError((prev) => ({ ...prev, general: "Đã xảy ra lỗi, vui lòng thử lại." }));
             }
 
             localStorage.setItem("token", data.access_token);

@@ -1,17 +1,29 @@
 import authService from '@/services/authService';
+import httpRequest from '@/utils/httpRequest';
 import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { useNavigate } from 'react-router-dom';
+import * as yup from 'yup';
+import { yupResolver } from './../../../node_modules/@hookform/resolvers/yup/src/yup';
+
+const userSchema = yup
+    .object({
+        fullname: yup.string().required("Truong nay la bat buoc"),
+        email: yup.string().email("Nhap email hop le").required("Truong nay la bat buoc"),
+        password: yup.string().min(8, "it nhat 8 ky tu").required("Truong nay la bat buoc"),
+        password_confirmation: yup.string().min(8, "it nhat 8 ky tu").required("Truong nay la bat buoc"),
+    })
+    .required();
 
 const RegisterOther = () => {
-    const [errorSever, setErrorServer] = useState({})
+
     const navigate = useNavigate();
-    const { register, handleSubmit, formState: { errors } } = useForm({
-        criteriaMode: "all"
-    });
+    const { register, handleSubmit, setError, formState: { errors } } = useForm({
+        resolver: yupResolver(userSchema),
+    })
 
     const getName = (name) => {
-        const parts = name.trim().split(" ").map((item) => item);
+        const parts = name.trim().split(" ");
         if (parts.length === 1) return [parts[0], ""];
         const firstName = parts.pop();
         const lastName = parts.join(" ");
@@ -19,9 +31,6 @@ const RegisterOther = () => {
     };
 
     const onSubmit = async (data) => {
-        setErrorServer("")
-        console.log(data)
-
         const [firstName, lastName] = getName(data.fullname);
 
         const requestData = {
@@ -30,77 +39,65 @@ const RegisterOther = () => {
             email: data.email,
             password: data.password,
             password_confirmation: data.password_confirmation
-        }
-        console.log(requestData)
+        };
+
+        console.log(requestData);
         try {
-            const res = await authService.register(requestData);
+            const resData = await authService.register(requestData);
 
-
-            if (!res.ok) {
-                if (data.errors) {
-                    setErrorServer(data.errors);
-                } else if (data.message) {
-                    setErrorServer((prev) => ({ ...prev, general: data.message }));
-                } else {
-                    setErrorServer((prev) => ({ ...prev, general: "Đã xảy ra lỗi, vui lòng thử lại." }));
-                }
-                throw new Error(data.message || "Đăng ký thất bại");
-            }
-
-            localStorage.setItem("token", data.access_token);
+            console.log(resData);
+            if (resData.status === "error") throw resData.message;
+            httpRequest.setToken(resData.access_token);
             navigate("/");
         } catch (error) {
-            console.log("Lỗi đăng ký:", error);
-            setErrorServer((prev) => ({ ...prev, general: "Lỗi máy chủ, vui lòng thử lại sau." }));
+            console.log(error)
+            setError("password_confirmation", {
+                type: "manual",
+                message: `${error}`
+            })
         }
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form style={{ display: 'flex', flexDirection: "column", width: '500px', gap: '5px' }} onSubmit={handleSubmit(onSubmit)}>
             <label htmlFor="fullname">Họ và Tên:</label>
             <input
                 id="fullname"
-                defaultValue=""
                 type="text"
                 placeholder="Họ và Tên"
-                {...register("fullname", { required: "Họ và Tên là bắt buộc" })}
+                {...register("fullname")}
             />
             {errors.fullname && <p>{errors.fullname.message}</p>}
-            {errorSever.fullname && <p>{errorSever.fullname}</p>}
+
             {/* Email */}
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Email:</label>
             <input
                 id="email"
-                defaultValue=""
                 placeholder="Email"
                 type="email"
-                {...register("email", { required: "Email là bắt buộc" })}
+                {...register("email")}
             />
             {errors.email && <p>{errors.email.message}</p>}
-            {errorSever.email && <p>{errorSever.email}</p>}
 
-            <label htmlFor="password">Password</label>
+            {/* Password */}
+            <label htmlFor="password">Password:</label>
             <input
                 id="password"
-                defaultValue=""
-                placeholder="password"
+                placeholder="Mật khẩu"
                 type="password"
-                {...register("password", { required: "Password là bắt buộc" })}
+                {...register("password")}
             />
             {errors.password && <p>{errors.password.message}</p>}
-            {errorSever.password && <p>{errorSever.password}</p>}
 
-            <label htmlFor="confirmPassword">Confirm password</label>
+            {/* Confirm Password */}
+            <label htmlFor="password_confirmation">Xác nhận mật khẩu:</label>
             <input
-                id="confirm_password"
-                defaultValue=""
-                placeholder="confirm password"
+                id="password_confirmation"
+                placeholder="Xác nhận mật khẩu"
                 type="password"
-                {...register("password_confirmation", { required: "Password là bắt buộc" })}
+                {...register("password_confirmation")}
             />
-            {errors.password_confirmation && <p>{errors.password.message}</p>}
-            {errorSever.password_confirmation && <p>{errorSever.password_confirmation}</p>}
-
+            {errors.password_confirmation && <p>{errors.password_confirmation.message}</p>}
 
             <button type="submit">Đăng ký</button>
         </form>

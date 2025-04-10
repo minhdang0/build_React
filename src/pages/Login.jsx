@@ -21,7 +21,7 @@ const Login = () => {
         }
         try {
             const res = await authService.login(formData);
-            httpRequest.setToken(res.data.access_token);
+            httpRequest.setToken(res.access_token);
             navigate(query.get("continue") || config.routes.home);
         } catch (error) {
             setHasError(true);
