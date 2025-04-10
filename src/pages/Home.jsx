@@ -6,7 +6,6 @@ import Form from "@/components/Form";
 import { TextInput } from "@/components/Form";
 import loginSchema from "@/schema/loginSchema";
 
-
 function Home() {
   const [search, setSearch] = useState("");
   const [avatar, setAvatar] = useState(null);
@@ -42,15 +41,30 @@ function Home() {
         <input type="file" onChange={handleFileChange} />
         {preview && <img src={preview} alt="Avatar preview" />}
       </form>
-      <Tabs defaultIndex={0} onChange={(currentIndex) => console.log(currentIndex)} >
-        <Tab title="Tab 1" onClick={() => console.log("CLicked !!!")}>Content Tab 1</Tab>
-        <Tab title="Tab 2" onClick={() => console.log("CLicked !!!")}>Content Tab 2</Tab>
-        <Tab title="Tab 3" onClick={() => console.log("CLicked !!!")}>Content Tab 3</Tab>
-        <Tab title="Tab 4" onClick={() => console.log("CLicked !!!")}>Content Tab 4</Tab>
+      <Tabs
+        defaultIndex={0}
+        onChange={(currentIndex) => console.log(currentIndex)}
+      >
+        <Tab title="Tab 1" onClick={() => console.log("CLicked !!!")}>
+          Content Tab 1
+        </Tab>
+        <Tab title="Tab 2" onClick={() => console.log("CLicked !!!")}>
+          Content Tab 2
+        </Tab>
+        <Tab title="Tab 3" onClick={() => console.log("CLicked !!!")}>
+          Content Tab 3
+        </Tab>
+        <Tab title="Tab 4" onClick={() => console.log("CLicked !!!")}>
+          Content Tab 4
+        </Tab>
       </Tabs>
       <hr />
       <div>
-        <Accordion defaultIndex={0} onChange={index => console.log(index)} collapseOther={false}>
+        <Accordion
+          defaultIndex={0}
+          onChange={(index) => console.log(index)}
+          collapseOther={false}
+        >
           <AccordionItem header="Accordion 1">
             Nội dung của Accordion 1
           </AccordionItem>
@@ -62,12 +76,11 @@ function Home() {
           </AccordionItem>
         </Accordion>
       </div>
-      <Form onSubmit={data => console.log(data)} schema={loginSchema} >
-        <TextInput name="email" />
-        <TextInput name="password" />
-        <button>Submit</button>
+      <Form onSubmit={(data) => console.log(data)} schema={loginSchema}>
+        <TextInput name="email" type="email" placeholder="email" />
+        <TextInput name="password" type="password" placeholder="password" />
+        <button type="submit">Submit</button>
       </Form>
-
     </>
   );
 }
